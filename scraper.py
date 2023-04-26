@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import bs4
 
 URL = "https://practice.dsc10.com/wi22-midterm/index.html"
 page = requests.get(URL)
@@ -28,19 +29,33 @@ first_answer = first_answers.find_next_sibling("div")
 # print(first_answers)
 #print(first_answer)
 
-# problem_list = []
+problem_list = []
 
-# for tag in titles:
-#     next_tag = tag.next_sibling
-#     current_content = tag
-#     while next_tag:
-#         if next_tag.name == "h3":
-#             break
-#         # if next_tag.get("id") == 'accordionExample':
-#         current_content += next_tag.text
-#         next_tag = next_tag.next_sibling
-#     problem_list.append(current_content)
+for tag in titles:
+    next_tag = tag.next_sibling
+    current_content = tag.text
+    while next_tag: 
+        #check if the next tag is a div and has the class "accordion-body"
+        if isinstance(next_tag, bs4.element.Tag):
+            print(next_tag.attrs)
+            # if next_tag["id"] == "accordionExample":
+            #     break
 
-#print(problem_list[2])
 
-print(titles[0].text)
+        # if isinstance(next_tag, bs4.element.Tag):
+        #     if next_tag["id"] == 'accordionExample':
+        #             break   
+        current_content += next_tag.text
+        next_tag = next_tag.next_sibling
+    problem_list.append(current_content)
+
+
+answer_list = soup.find_all("div", {"class": "accordion-body"})
+
+#convert answers and titles to text
+for i in range(len(answer_list)):
+    answer_list[i] = answer_list[i].text
+for i in range(len(titles)):
+    titles[i] = titles[i].text
+
+#print(problem_list[0])
