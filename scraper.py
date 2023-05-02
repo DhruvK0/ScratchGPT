@@ -17,19 +17,33 @@ paragraphs = soup.find_all("p")
 info_pars = paragraphs[4:7]
 
 titles = soup.find_all(["h3"])
+title_split = [] 
+for tag in titles:
+    title_split.append(tag.text.split(".")[0])
+
+h2_headers = soup.find_all("h2")
+
+# test_filtered = []
+
+for tag in h2_headers:
+    if tag.get('class') != ['accordion-header']:
+        if tag.text not in title_split:
+            if "Problem" in tag.text:
+                number = tag.text.split(" ")[1]
+                #find the first tag with a number 1 greater than the current number
+                for i in range(len(titles)):
+                    if int(titles[i].text.split(" ")[1].split(".")[0]) == int(number) + 1:
+                        titles.insert(i, tag)
+                        break                
+
+
+
+
 
 first_prob = titles[0]
 first_desc = first_prob.next_sibling.next_sibling.next_sibling.next_sibling
 first_answers = first_desc.find_next_sibling("ul")
 first_answer = first_answers.find_next_sibling("div")
-
-# for paragraph in paragraphs:
-#     if "Welcome to the Midterm Exam for DSC 10 Winter 2022" in paragraph or " For each skyscraper, we have: - its name, which is stored in the index of" in paragraph:
-#         info_par.append(paragraph)
-# print(first_prob)
-# print(first_desc)
-# print(first_answers)
-#print(first_answer)
 
 problem_list = []
 
@@ -71,8 +85,6 @@ for i in range(len(titles)):
     #     titles[i] = ""
     titles[i] = titles[i].text
 
-#insert single questions
-problem_list.insert(15, "Problem 4")
 
 df = pd.DataFrame(list(zip(problem_list, answer_list)), columns = ["Problem", "Answer"])
 df.to_csv("midterm.csv", index = False)
